@@ -43,21 +43,35 @@ Email: Django console email backend (development)
 Clone the repository:
 
 ```bash
-git clone https://github.com/hyperiondev-bootcamps/CH26020020037.git
-cd CH26020020037
-cd "Level 2 - Introduction to Software Engineering/M06T08 – Capstone Project – News Application/news_project"
-
-# 2. Create the virtual environment
+git clone https://github.com/char-rea/newsapp
+cd news_project
 python -m venv venv
-
-# Activate on Mac/Linux
-source venv/bin/activate
-
-# Activate on Windows
-venv\Scripts\activate
-
-# Install Dependencies
+source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
+
+## Running with Docker
+
+```bash
+docker build -t newsapp .
+docker run -p 8000:8000 newsapp
+```
+Or with Docker Compose:
+```bash
+docker-compose up --build
+```
+
+## Secret Keys / Environment Variables
+
+> Please do NOT commit your `SECRET_KEY` or any passwords.
+
+Create a `.env` file (this is gitignored):
+```
+SECRET_KEY=your-secret-key-here
+DEBUG=True
+```
 
 # Database-setup
 CREATE DATABASE news_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
