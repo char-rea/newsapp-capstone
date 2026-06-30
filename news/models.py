@@ -1,3 +1,9 @@
+"""
+models.py
+
+Defines the database models for the News application.
+"""
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
