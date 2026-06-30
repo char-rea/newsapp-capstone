@@ -1,0 +1,60 @@
+{% extends 'news/base.html' %}
+{% block title %}NewsApp — Home{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-inner">
+        <h1>Stay informed, read News Now!<br>Verified writers and trusted publishers</h1>
+        <p> </p>
+        <a href="{% url 'article_list' %}" class="btn-primary">Browse Articles</a>
+        
+        {% if not user.is_authenticated %}
+            <a href="{% url 'register' %}" class="btn-outline">Join Free</a>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Latest Articles -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Latest Articles</h2>
+        <div class="card-grid">
+            {% for article in articles %}
+                <article class="card">
+                    <div class="card-body">
+                        <span class="card-tag">
+                            {{ article.publisher.name|default:"Independent" }}
+                        </span>
+                        <h3 class="card-title">
+                            <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
+                        </h3>
+                        <p class="card-meta">
+                            By {{ article.author.get_full_name|default:article.author.username }}
+                            · {{ article.created_at|date:"M d, Y" }}
+                        </p>
+                        <p class="card-excerpt">{{ article.content|truncatewords:25 }}</p>
+                    </div>
+                    <a href="{% url 'article_detail' article.pk %}" class="card-link">Read more →</a>
+                </article>
+            {% empty %}
+                <p class="empty-state">No articles published yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Publishers -->
+{% if publishers %}
+<section class="section section-dark">
+    <div class="container">
+        <h2 class="section-title">Featured Publishers</h2>
+        <div class="publisher-row">
+            {% for pub in publishers %}
+                <div class="publisher-chip">{{ pub.name }}</div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

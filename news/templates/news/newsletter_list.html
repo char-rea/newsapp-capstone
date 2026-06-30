@@ -1,0 +1,35 @@
+{% extends 'news/base.html' %}
+{% block title %}Newsletters — NewsApp{% endblock %}
+
+{% block content %}
+<div class="container section">
+
+    <div class="page-header">
+        <h1>Newsletters</h1>
+        {% if user.is_journalist or user.is_editor %}
+            <a href="{% url 'newsletter_create' %}" class="btn-primary">+ Create</a>
+        {% endif %}
+    </div>
+
+    <div class="card-grid">
+        {% for nl in newsletters %}
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">
+                        <a href="{% url 'newsletter_detail' nl.pk %}">{{ nl.title }}</a>
+                    </h3>
+                    <p class="card-meta">
+                        By {{ nl.author.username }} · {{ nl.created_at|date:"M d, Y" }}
+                    </p>
+                    <p class="card-excerpt">{{ nl.description|truncatewords:20 }}</p>
+                    <p class="text-muted">{{ nl.articles.count }} article(s)</p>
+                </div>
+                <a href="{% url 'newsletter_detail' nl.pk %}" class="card-link">Read →</a>
+            </div>
+        {% empty %}
+            <p class="empty-state">No newsletters yet.</p>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

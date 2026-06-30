@@ -1,0 +1,86 @@
+{% extends 'news/base.html' %}
+{% block title %}{{ action }} Publisher — NewsApp{% endblock %}
+
+{% block content %}
+<div class="container section">
+    <div class="form-wrapper">
+        <h1>{{ action }} Publisher</h1>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Name -->
+            <div class="form-group">
+                <label class="form-label">Publisher Name</label>
+                <input type="text" name="name" class="form-control"
+                       value="{{ form.name.value|default:'' }}"
+                       placeholder="e.g. Tech Daily" required />
+                {% if form.name.errors %}
+                    <div class="form-error">{{ form.name.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-control"
+                          rows="4"
+                          placeholder="About this publisher...">{{ form.description.value|default:'' }}</textarea>
+            </div>
+
+            <!-- Assign Editors -->
+            <div class="form-group">
+                <label class="form-label">Assign Editors</label>
+                {% if form.editors.field.queryset.exists %}
+                    <div class="article-checklist">
+                        {% for editor in form.editors.field.queryset %}
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="editors" value="{{ editor.pk }}"
+                                    {% if publisher %}
+                                        {% if editor in publisher.editors.all %}checked{% endif %}
+                                    {% endif %} />
+                                {{ editor.username }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No editors registered yet.</p>
+                {% endif %}
+                {% if form.editors.errors %}
+                    <div class="form-error">{{ form.editors.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Assign Journalists -->
+            <div class="form-group">
+                <label class="form-label">Assign Journalists</label>
+                {% if form.journalists.field.queryset.exists %}
+                    <div class="article-checklist">
+                        {% for journalist in form.journalists.field.queryset %}
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="journalists" value="{{ journalist.pk }}"
+                                    {% if publisher %}
+                                        {% if journalist in publisher.journalists.all %}checked{% endif %}
+                                    {% endif %} />
+                                {{ journalist.username }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No journalists registered yet.</p>
+                {% endif %}
+                {% if form.journalists.errors %}
+                    <div class="form-error">{{ form.journalists.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    {{ action }} Publisher
+                </button>
+                <a href="{% url 'publisher_list' %}" class="btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

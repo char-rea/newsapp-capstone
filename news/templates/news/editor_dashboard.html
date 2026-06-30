@@ -1,0 +1,69 @@
+{% extends 'news/base.html' %}
+{% block title %}Editor Dashboard — NewsApp{% endblock %}
+
+{% block content %}
+<div class="container section">
+
+    <div class="page-header">
+        <h1>Editor Dashboard</h1>
+        <span class="badge">{{ pending_articles.count }} pending</span>
+    </div>
+
+    <!-- Pending Articles -->
+    <h2 class="section-subtitle">⏳ Awaiting Approval</h2>
+    {% if pending_articles %}
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Publisher</th>
+                        <th>Submitted</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for article in pending_articles %}
+                    <tr>
+                        <td>{{ article.title }}</td>
+                        <td>{{ article.author.username }}</td>
+                        <td>{{ article.publisher.name|default:"Independent" }}</td>
+                        <td>{{ article.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <a href="{% url 'approve_article' article.pk %}" class="btn-sm">Review</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="empty-state">No articles pending approval. ✓</p>
+    {% endif %}
+
+    <!-- Recently Approved -->
+    <h2 class="section-subtitle" style="margin-top:2.5rem;">✅ Recently Approved</h2>
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Title</th><th>Author</th><th>Approved</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for article in approved_articles %}
+                <tr>
+                    <td><a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a></td>
+                    <td>{{ article.author.username }}</td>
+                    <td>{{ article.approved_at|date:"M d, Y"|default:"—" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3">None yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'news/base.html' %}
+{% block title %}{{ action }} Article — NewsApp{% endblock %}
+
+{% block content %}
+<div class="container section">
+    <div class="form-wrapper">
+        <h1>{{ action }} Article</h1>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="form-group">
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="form-error">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    {{ action }} Article
+                </button>
+                <a href="{% url 'article_list' %}" class="btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

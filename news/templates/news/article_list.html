@@ -1,0 +1,53 @@
+{% extends 'news/base.html' %}
+{% block title %}Articles — NewsApp{% endblock %}
+
+{% block content %}
+<div class="container section">
+
+    <div class="page-header">
+        <h1>All Articles</h1>
+        {% if user.is_journalist %}
+            <a href="{% url 'article_create' %}" class="btn-primary">+ New Article</a>
+        {% endif %}
+    </div>
+
+    <!-- Search -->
+    <form method="get" class="search-form">
+        <input type="text" name="q" value="{{ query }}"
+               placeholder="Search articles..." class="form-control search-input" />
+        <button type="submit" class="btn-primary">Search</button>
+        {% if query %}
+            <a href="{% url 'article_list' %}" class="btn-outline">Clear</a>
+        {% endif %}
+    </form>
+
+    <!-- Results -->
+    <div class="card-grid">
+        {% for article in articles %}
+            <article class="card">
+                <div class="card-body">
+                    <span class="card-tag">{{ article.publisher.name|default:"Independent" }}</span>
+                    <h3 class="card-title">
+                        <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
+                    </h3>
+                    <p class="card-meta">
+                        By {{ article.author.get_full_name|default:article.author.username }}
+                        · {{ article.created_at|date:"M d, Y" }}
+                    </p>
+                    <p class="card-excerpt">{{ article.content|truncatewords:20 }}</p>
+                </div>
+                <div class="card-actions">
+                    <a href="{% url 'article_detail' article.pk %}" class="card-link">Read →</a>
+                    {% if user.is_editor or user.is_journalist and article.author == user %}
+                        <a href="{% url 'article_edit' article.pk %}" class="btn-sm">Edit</a>
+                        <a href="{% url 'article_delete' article.pk %}" class="btn-sm btn-danger">Delete</a>
+                    {% endif %}
+                </div>
+            </article>
+        {% empty %}
+            <p class="empty-state">No articles found.</p>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}News Now{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'news/css/style.css' %}" />
+</head>
+<body>
+
+    <!-- ── Navigation ─────────────────────────────────────────────────────── -->
+    <nav class="navbar">
+        <div class="nav-inner">
+            <a href="{% url 'home' %}" class="nav-brand">News Now</a>
+
+            <ul class="nav-links">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'article_list' %}">Articles</a></li>
+                <li><a href="{% url 'newsletter_list' %}">Newsletters</a></li>
+                <li><a href="{% url 'publisher_list' %}">Publishers</a></li>
+
+            {% if user.is_authenticated %}
+                {% if user.role == 'journalist' %}
+                    <li><a href="{% url 'article_create' %}" class="nav-cta">+ Write</a></li>
+                {% endif %}
+                {% if user.role == 'editor' %}
+                    <li><a href="{% url 'editor_dashboard' %}" class="nav-badge">Editor ✦</a></li>
+                    <li><a href="{% url 'publisher_create' %}" class="nav-cta">+ Publisher</a></li>
+                {% endif %}
+                    <li><a href="{% url 'profile' %}">
+                {{ user.username }} <span class="role-chip">{{ user.role }}</span>
+                    </a></li>
+                <li><a href="{% url 'logout' %}" class="nav-logout">Logout</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Login</a></li>
+                <li><a href="{% url 'register' %}" class="nav-cta">Sign Up</a></li>
+            {% endif %}
+    </ul>
+        </div>
+    </nav>
+
+    <!-- ── Flash Messages ─────────────────────────────────────────────────── -->
+    {% if messages %}
+        <div class="flash-container">
+            {% for message in messages %}
+                <div class="flash flash-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- ── Main Content ───────────────────────────────────────────────────── -->
+    <main class="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ── Footer ─────────────────────────────────────────────────────────── -->
+    <footer class="footer">
+        <p>News Now 2026 · <b>Built by Charlotte</b></p>
+    </footer>
+
+</body>
+</html>

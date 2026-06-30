@@ -1,0 +1,37 @@
+{% extends 'news/base.html' %}
+{% block title %}{{ newsletter.title }} — NewsApp{% endblock %}
+
+{% block content %}
+<div class="container section">
+    <div class="article-wrapper">
+
+        <h1 class="article-title">{{ newsletter.title }}</h1>
+        <p class="article-byline">
+            Curated by <strong>{{ newsletter.author.username }}</strong>
+            · {{ newsletter.created_at|date:"F j, Y" }}
+        </p>
+        {% if newsletter.description %}
+            <p class="newsletter-desc">{{ newsletter.description }}</p>
+        {% endif %}
+
+        <hr class="divider" />
+
+        <h2>Articles in this Newsletter</h2>
+        {% for article in newsletter.articles.all %}
+            <div class="card" style="margin-bottom:1rem;">
+                <div class="card-body">
+                    <span class="card-tag">{{ article.publisher.name|default:"Independent" }}</span>
+                    <h3 class="card-title">
+                        <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
+                    </h3>
+                    <p class="card-meta">By {{ article.author.username }} · {{ article.created_at|date:"M d, Y" }}</p>
+                </div>
+            </div>
+        {% empty %}
+            <p class="empty-state">No articles in this newsletter yet.</p>
+        {% endfor %}
+
+        <a href="{% url 'newsletter_list' %}" class="btn-outline" style="margin-top:2rem;">← Newsletters</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'news/base.html' %}
+{% block title %}{{ article.title }} — NewsApp{% endblock %}
+
+{% block content %}
+<div class="container section">
+    <div class="article-wrapper">
+
+        <div class="article-meta">
+            <span class="card-tag">{{ article.publisher.name|default:"Independent" }}</span>
+            <span class="article-date">{{ article.created_at|date:"F j, Y" }}</span>
+        </div>
+
+        <h1 class="article-title">{{ article.title }}</h1>
+
+        <p class="article-byline">
+            By <strong>{{ article.author.get_full_name|default:article.author.username }}</strong>
+            {% if article.approved_by %}
+                · Approved by {{ article.approved_by.username }}
+            {% endif %}
+        </p>
+
+        <div class="article-body">
+            {{ article.content|linebreaks }}
+        </div>
+
+        <div class="article-footer">
+            <a href="{% url 'article_list' %}" class="btn-outline">← Back to Articles</a>
+            {% if user.is_editor or user.is_journalist and article.author == user %}
+                <a href="{% url 'article_edit' article.pk %}" class="btn-primary">Edit</a>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

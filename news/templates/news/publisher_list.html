@@ -1,0 +1,62 @@
+{% extends 'news/base.html' %}
+{% block title %}Publishers — NewsApp{% endblock %}
+
+{% block content %}
+<div class="container section">
+
+    <div class="page-header">
+        <h1>Publishers</h1>
+        {% if user.is_editor %}
+            <a href="{% url 'publisher_create' %}" class="btn-primary">+ New Publisher</a>
+        {% endif %}
+    </div>
+
+    {% if publishers %}
+        <div class="card-grid">
+            {% for pub in publishers %}
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">{{ pub.name }}</h3>
+                        {% if pub.description %}
+                            <p class="card-excerpt">{{ pub.description }}</p>
+                        {% endif %}
+
+                        <p class="card-meta" style="margin-top:0.75rem;">
+                            <strong>Editors:</strong>
+                            {% if pub.editors.all %}
+                                {% for e in pub.editors.all %}{{ e.username }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                            {% else %}
+                                None assigned
+                            {% endif %}
+                        </p>
+                        <p class="card-meta">
+                            <strong>Journalists:</strong>
+                            {% if pub.journalists.all %}
+                                {% for j in pub.journalists.all %}{{ j.username }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                            {% else %}
+                                None assigned
+                            {% endif %}
+                        </p>
+                        <p class="card-meta">
+                            <strong>Articles:</strong> {{ pub.articles.count }}
+                        </p>
+                    </div>
+
+                    {% if user.is_editor %}
+                        <div class="card-actions">
+                            <a href="{% url 'publisher_edit' pub.pk %}" class="btn-sm">Edit / Assign Staff</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-state">No publishers yet.
+            {% if user.is_editor %}
+                <a href="{% url 'publisher_create' %}">Create the first one.</a>
+            {% endif %}
+        </p>
+    {% endif %}
+
+</div>
+{% endblock %}

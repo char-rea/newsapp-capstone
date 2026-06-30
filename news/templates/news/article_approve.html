@@ -1,0 +1,77 @@
+{% extends 'news/base.html' %}
+{% block title %}Review Article — NewsApp{% endblock %}
+
+{% block content %}
+<div class="container section">
+    <div class="form-wrapper">
+
+        <div class="page-header">
+            <h1>Review Article</h1>
+            <a href="{% url 'editor_dashboard' %}" class="btn-outline">← Dashboard</a>
+        </div>
+
+        <!-- Article Preview -->
+        <div class="review-card">
+            <span class="card-tag">
+                {{ article.publisher.name|default:"Independent" }}
+            </span>
+            <h2 style="margin:0.75rem 0 0.5rem;">{{ article.title }}</h2>
+            <p class="card-meta">
+                By {{ article.author.get_full_name|default:article.author.username }}
+                · Submitted {{ article.created_at|date:"F j, Y" }}
+            </p>
+            <div class="article-body preview">
+                {{ article.content|linebreaks }}
+            </div>
+        </div>
+
+        <!-- Edit Article Inline -->
+        <details class="edit-section">
+            <summary class="btn-outline" style="cursor:pointer; margin-bottom:1rem;">
+                ✏️ Edit Before Approving
+            </summary>
+            <form method="post" action="{% url 'article_edit' article.pk %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" name="title" class="form-control"
+                           value="{{ article.title }}" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Content</label>
+                    <textarea name="content" class="form-control"
+                              rows="10">{{ article.content }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Publisher</label>
+                    <select name="publisher" class="form-control">
+                        <option value="">— Independent —</option>
+                        {% for pub in publishers %}
+                            <option value="{{ pub.pk }}"
+                                {% if article.publisher.pk == pub.pk %}selected{% endif %}>
+                                {{ pub.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Save Edits</button>
+            </form>
+        </details>
+
+        <!-- Approve / Reject Actions -->
+        <form method="post" class="approve-actions" style="margin-top:1.5rem;">
+            {% csrf_token %}
+            <button type="submit" name="action" value="approve"
+                    class="btn-primary btn-lg">
+                ✓ Approve & Publish
+            </button>
+            <button type="submit" name="action" value="reject"
+                    class="btn-danger btn-lg"
+                    onclick="return confirm('Reject and permanently delete this article?')">
+                ✗ Reject
+            </button>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

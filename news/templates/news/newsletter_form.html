@@ -1,0 +1,74 @@
+{% extends 'news/base.html' %}
+{% block title %}{{ action }} Newsletter — NewsApp{% endblock %}
+
+{% block content %}
+<div class="container section">
+    <div class="form-wrapper">
+        <h1>{{ action }} Newsletter</h1>
+
+        {% if not has_articles %}
+            <div class="flash flash-warning">
+                ⚠️ You need at least one approved article before creating a newsletter.
+                {% if user.role == 'journalist' %}
+                    <a href="{% url 'article_create' %}">Write an article</a> and ask
+                    an editor to approve it first.
+                {% endif %}
+            </div>
+            <a href="{% url 'newsletter_list' %}" class="btn-outline">← Back</a>
+        {% else %}
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Title -->
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" name="title" class="form-control"
+                           value="{{ form.title.value|default:'' }}"
+                           placeholder="Newsletter title" required />
+                    {% if form.title.errors %}
+                        <div class="form-error">{{ form.title.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control"
+                              rows="4" placeholder="What is this newsletter about?">{{ form.description.value|default:'' }}</textarea>
+                    {% if form.description.errors %}
+                        <div class="form-error">{{ form.description.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Articles -->
+                <div class="form-group">
+                    <label class="form-label">Select Articles to Include</label>
+                    <div class="article-checklist">
+                        {% for article in approved_articles %}
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="articles" value="{{ article.pk }}"
+                                    {% if article.pk|stringformat:"s" in selected_articles %}checked{% endif %} />
+                                <span>
+                                    <strong>{{ article.title }}</strong>
+                                    <span class="text-muted">
+                                        — {{ article.author.username }}
+                                        · {{ article.created_at|date:"M d, Y" }}
+                                    </span>
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {% if form.articles.errors %}
+                        <div class="form-error">{{ form.articles.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Save Newsletter</button>
+                    <a href="{% url 'newsletter_list' %}" class="btn-outline">Cancel</a>
+                </div>
+            </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
