@@ -1,5 +1,7 @@
 from pathlib import Path
 from datetime import timedelta
+import os
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -47,15 +49,21 @@ TEMPLATES = [
     },
 ]
 
+
+load_dotenv()
+
+SECRET_KEY = os.environ.get('SECRET_KEY', 'fallback-dev-key')
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+
 # ── MariaDB Configuration ─────────────────────────────────────────────────
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'news_db',
-        'USER': 'news_user',
-        'PASSWORD': 'news_password123',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': os.environ.get('DB_NAME', 'news_db'),
+        'USER': os.environ.get('DB_USER', 'news_user'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
         'OPTIONS': {
             'charset': 'utf8mb4',
         },
@@ -96,6 +104,7 @@ INTERNAL_API_KEY = 'internal-secret-key-change-this'
 INTERNAL_API_URL = 'http://127.0.0.1:8000'
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_PASSWORD_VALIDATORS = [
